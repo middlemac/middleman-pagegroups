@@ -1,6 +1,6 @@
 middleman-pagegroups readme
 ---------------------------
-[![Gem Version](https://badge.fury.io/rb/middleman-targets.svg)](https://badge.fury.io/rb/middleman-targets)
+[![Gem Version](https://badge.fury.io/rb/middleman-pagegroups.svg)](https://badge.fury.io/rb/middleman-pagegroups)
 
 
 `middleman-pagegroups`
