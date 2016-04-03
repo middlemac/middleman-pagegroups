@@ -1,0 +1,39 @@
+---
+title:    Welcome to <code>middleman-pagegroups</code>
+blurb:    <em>middleman-pageGroups</em> is a great way to serve organized content.
+layout:   template-logo-large
+navigate: false
+---
+
+# <%= current_page.data.title %>
+
+Thanks for having a look at `middlemac-pagegroups`! This documentation is an
+example of “eating your own dog food,” and uses the features of this extension
+to demonstrate itself.
+
+`middleman-pagegroups` principally enables **automatic navigation** via the
+management of **sort order**, **groups** (including nested groups), and making
+a determination about the **legitimacy** of these relationships.
+
+It provides sample partials to enable **breadcrumbs**, **previous** and 
+**next** buttons, **tables of contents**, and **related pages**, all using the
+concepts that enable automatic navigation.
+
+The extension itself is quite simple; it adds a few methods to each resource
+(those that you access with `current_page`, as well as several helpers, and if
+you prefer to use partials, `middleman-pagegroups` can even generate some sample
+partials for you.
+
+* * *
+
+<%= nav_legitimate_children %>
+
+* * *
+
+The table of contents above is the result of using the `nav_legitimate_children`
+helper; all of the data comes automatically from the front matter of the files
+that are part of this `source` group.
+
+~~~ erb
+<%%= nav_legitimate_children %>
+~~~

@@ -1,0 +1,32 @@
+---
+title:    <code>middleman-pagegroups</code> Documentation
+blurb:    Learn how to use <code>middleman-pagegroups</code> to effectively
+          manage large and small projects alike.
+layout:   template-logo-large
+order:    10
+navigate: true
+---
+
+# <%= current_page.data.title %>
+
+<div class="note" markdown="1">
+- All of these documents are part of the `documentation` group. This is because
+  the source directory they reside in is named `documentation/`.
+
+- This particular page is the index page of the group, and is considered the
+  parent of all of the other files.
+  
+  - This page has an `:order` key set; it affects the display order of **its**
+    parent; in this case the parent is the welcome page.  
+
+  - This page has the front matter key `:navigate` set to `true`. This means
+    that the child pages will include **previous** and **next** navigation
+    buttons, unless they have a front matter key `:navigator` set to `false`.
+    
+- Here is [a page](ovum) that's part of the group and is accessible, but is
+  excluded from all of the automatic features.
+</div>
+
+* * *
+
+<%= nav_legitimate_children :class => 'table_contents' %>

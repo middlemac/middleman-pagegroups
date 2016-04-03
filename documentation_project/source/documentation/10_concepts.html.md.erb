@@ -1,0 +1,111 @@
+---
+title:     Concepts
+id:        concepts
+blurb:     Understand the design and philosophy of <code>middleman-pagegroups</code>.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+This section describes some of `middleman-pagegroups`’ design and
+philosophy, and this is the right section to begin in if you’re still wondering
+what this extension actually provides to you.
+
+## Intended Uses
+
+`middleman-pagegroups` is chiefly designed to support hierarchical, structured,
+multi-page documents that have organizational relationships between them, such
+as product manuals, help files, and Middleman extension gem documentation.
+
+Using its model for groups, pages, legitimate children, and brethren simplifies
+the implementation of tables of contents, previous and next buttons, breadcrumb
+indicators, see-also tables, and more. This frees you from having to manually
+update and validate scores of links and hand-coding on a page-by-page basis.
+
+Books with sections, chapters, and pages are an obvious sample use case.
+Software manuals, tutorials, training courses, and more are all suitable
+candidates for the flexible and nearly-automatic organization provided by
+`middleman-pagegroups`.
+
+
+## What `middleman-pagegroups` does
+
+`middleman-pagegroups` principally enables **automatic navigation** via the
+management of **sort order**, **groups** (including nested groups), and making
+a determination about the **legitimacy** of these relationships.
+
+It provides helpers and sample partials to enable **breadcrumbs**, **previous**
+and *next** buttons, **tables of contents**, and **related pages**, all using
+the concepts that enable automatic navigation.
+
+
+## Convention over Configuration
+
+All of the features making `middleman-pagegroups` useful hinge on being able to
+enable automatic navigation, and this is accomplished by following logical,
+simple conventions that avoid having to micromanage many series of configuration
+files.
+
+For example you will define a **group** as a directory in your file system and
+include an `index.html` file to serve as the parent of that group.
+
+You will establish **sort orders** to define the **legitimacy** of certain
+pages for inclusion or exclusion in the automatic navigation system.
+
+
+## Hierarchical Design
+
+`middleman-pagegroups` inherently uses the concept of “groups,” each of which
+has pages and/or groups that belong to the group as its children.
+
+Every project has a single, top-level (root) group, and because groups are named
+for the directory that contain them, the top level group is usually named
+`source` (because Middleman’s default source folder is so-named).
+
+A detailed look at the hierarchical design and requirements can be found in the
+[Directory Organization](directory_organization) section.
+ 
+ 
+## Sort Order
+
+Every page intended for automatic navigation must include a sort order, which
+can be specified with a [Front Matter](frontmatter) key or as part of the file
+name.
+
+Don’t confuse sort order with page number. Sort order is simply an integer value
+that does not have to be consecutive. It may be convenient to specify these in
+steps of 10, for example, to make later insertions easier.
+
+To include pages in your project (such as [this one](ovum)) that don’t
+participate in the automatic navigation scheme, simply do not provide a sort
+order.
+
+
+## Legitimacy
+
+In the context of `middleman-pagegroups` “legitimacy” refers to eligibility for
+inclusion in the automatic navigation system. The criteria for legitimacy
+include:
+
+- The file must be an HTML or XHTML file.
+- The file must not be `ignored?`, which is a resource attribute built into
+  Middleman. Other extensions (such as `middleman-targets`) may modify this
+  attribute.
+- The file must have an assigned sort order.
+
+You can still include accessible pages within the group but exclude them from
+the automatic navigation features, i.e., render them “illegitimate.” Simply do
+not provide a sort order for these pages.
+
+
+## Brethren
+
+`middleman-pagegroups` uses the word _brethren_ to refer to _legitimate
+siblings_, i.e., “legitimate” as described above, not including itself. This
+serves as a good basis for related-pages types of links.
+
+## Legitimate Children
+
+`middleman-pagegroups` similarly refines Middleman’s built-in children to
+ensure that _only_ “legitimate” documents are included in automatic navigation.

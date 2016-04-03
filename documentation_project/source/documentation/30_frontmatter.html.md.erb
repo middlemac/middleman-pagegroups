@@ -1,0 +1,70 @@
+---
+title:     Front Matter
+id:        frontmatter
+blurb:     Front matter controls features such as navigation, and can be used
+           to control page sort order.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+<%= current_page.data.blurb %>
+
+Using some of these new front matter keys will make implementing automatic
+navigation features much, much easier for you. This is a description of the
+keys.
+
+`blurb`
+
+  : Specifying a blurb for your pages make tables of content more interesting,
+    as they can automatically include a brief summary about that particular
+    page. Suitably written blurbs can even be included in their own pages,
+    such as the opening paragraph if this page.
+    
+    Note that if you want HTML features in your blurbs, then they must be
+    written in HTML. Middleman doesn’t process front matter, and so markdown
+    can’t be used.
+    {:.note}
+
+`navigate`
+
+  : When used with group `index.html` pages, it indicates that its legitimate
+    children should implement a page navigator (previous and next page controls)
+    if they are eligible.
+    
+    The default is `false`.
+    
+    As done in this sample documentation project’s templates, a check using
+    the [resource](resources) `current_page.navigator_eligible?` will determine
+    that the group is enabled via `navigate` and then add the navigation control
+    to eligible pages.
+
+`navigator`
+
+  : When used in any of your pages, it indicates that a page navigator (previous
+    and next page controls) should be implemented if the page is eligible. 
+    
+    The default is `true`; this means you only have to use this key to exclude
+    an otherwise legitimate page.
+
+    As done in this sample documentation project’s templates, a check using
+    the [resource](resources) `current_page.navigator_eligible?` will determine
+    that the group is enabled via `navigate` and then add the navigation control
+    to eligible pages.
+
+`order`
+
+  : Use this key to specify the order that the page appears in the various
+    helpers and partials. This key is required for any `index.html` (except for
+    the root item), and optional if you prefer to number your pages using
+    [filename prefixes](directory_organization).
+    
+    All pages eligible for automatic navigation must have an order set via one
+    method or another. Pages without an order are still included, of course,
+    and you can link to them as usual.
+    
+    Sort order is any integer, and sort order does not have to be consecutive.
+    Sometimes it’s helpful to leave large gaps in order to simplify future
+    insertions. (You can use `current_page.page_sequence` to generate page
+    numbers.)

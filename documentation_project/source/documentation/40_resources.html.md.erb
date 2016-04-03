@@ -1,0 +1,79 @@
+---
+title:     Resources
+id:        resources
+blurb:     You will use resource methods to design your own partials and templates.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+The built-in resource additions can be useful in designing your own
+partials, templates, and helpers.
+
+## Resources
+
+Resource extensions are usually accessed in your templates, partials, and
+helpers with `current_page`, and so the descriptions below will use this as an
+example. However keep in mind that these methods apply to _any_ resource.
+
+`current_page.breadcrumbs`
+
+  : Returns an array of pages leading to the specified page.
+
+`current_page.brethren`
+
+  : Returns an array of all of the legitimate siblings of the specified page,
+    returning them by ascending sort order.
+
+`current_page.brethren_next`
+
+  : Returns the next legitimate sibling of the specified page, or `nil` if it’s
+    already the last page.
+
+`current_page.brethren_previous`
+
+  : Returns the previous legitimate sibling of the specified page, or `nil` if
+    it’s already the first page.
+
+`current_page.group_count`
+
+  : Indicates the number of pages that are in the current group.
+
+`current_page.legitimate_children`
+
+  : Returns an array of all of the specified page’s legitimate children, sorted
+    in ascending order by their sort order.
+ 
+`current_page.navigator_eligible?`
+
+  : Indicates whether or not the page is eligible for displaying a previous/next
+    page indicator. It’s eligible if all of these conditions are met:
+    
+    - Its parent has front matter key `navigate` set to true.
+    - It does _not_ have a front matter key `navigator` set to false.
+    - It’s a legitimate page, i.e., has a sort order, not ignored, etc.
+
+`current_page.page_group`
+
+  : Indicates the name of the current page group. This can be useful for setting
+    up CSS and performing conditional tasks. The name of the group is simply
+    the name of the containing directory. Group names might not be unique.
+
+`current_page.page_name`
+
+  : Indicates the name of the current page. This can be useful for setting up
+    CSS and performing conditional tasks. The name of the page is simply the
+    output page name without an extension. Page names might not be unique.
+ 
+`current_page.page_sequence`
+
+  : Indicates the sequence of the page within its group, starting with one. You
+    might use this directly as a page number, or use it indirectly if your page
+    numbers don’t start at one.
+    
+    Pages without sort orders will return `nil` for this value.
+
+`current_page.sort_order`
+
+  : Indicates the sort order of the page, or 0 if no order has been assigned.

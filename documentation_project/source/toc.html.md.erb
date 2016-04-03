@@ -1,0 +1,26 @@
+---
+title:    Complete Table of Contents
+blurb:    See all of this site’s content displayed in a nice, simple list.
+layout:   template-logo-medium
+order:    50
+navigate: false
+---
+
+# <%= current_page.data.title %>
+
+Here’s a look at all of the content available in this site.
+
+<%= nav_toc_index(:start => current_page.breadcrumbs.first) %>
+
+* * *
+
+The table of contents above is the result of using the sample included
+`help_map` partial:
+
+~~~ erb
+<%%= nav_toc_index(:start => current_page.breadcrumbs.first) %>
+~~~
+
+Without the `:start` local variable the table of contents would normally start
+at the current page; however we used the convenient `breadcrumbs.first` to
+specify a top level start for the TOC.

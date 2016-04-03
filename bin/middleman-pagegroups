@@ -1,0 +1,108 @@
+#!/usr/bin/env ruby
+
+################################################################################
+# middleman-pagegroups
+#  This file constitutes the command line interface for middleman-pagegroups
+################################################################################
+
+require 'thor'
+require 'fileutils'
+require_relative '../lib/middleman-pagegroups/version'
+require_relative '../lib/middleman-pagegroups/partials'
+
+
+module MiddlemanPageGroupsCli
+
+  class Cli < Thor
+
+    map %w[--version -v] => :__print_version
+
+    ############################################################
+    # help
+    #  Override to add additional description.
+    ############################################################
+    def help(*args)
+      if args.count == 0
+        puts <<-HEREDOC
+
+middleman-pagegroups version #{Middleman::MiddlemanPageGroups::VERSION}
+
+This gem adds functionality to Middleman and is not executable on its own,
+other than for generating the documentation sample project and sample partial
+files. Instead, you must add this gem to your Middleman project's `Gemfile` 
+and then activate it in your `config.rb` file. 
+
+HEREDOC
+      end
+      super
+    end
+
+
+    ############################################################
+    # documentation
+    ############################################################
+    desc 'documentation', 'Install the sample project into your current working directory.'
+    long_desc <<-HEREDOC
+`documentation` will produce a sample project named `middleman-pagegroups-docs/`
+in your current working directory. This sample uses the features of this gem.
+You can then serve this new project to read the documentation by:
+
+cd middleman-pagegroups-docs
+bundle install
+bundle exec middleman server
+    
+    HEREDOC
+    def documentation
+      source = File.join('..', '..', 'documentation_project', '.')
+      source = File.expand_path(source, __FILE__)
+      dest = File.expand_path(File.join('.', 'middleman-pagegroups-docs', '.'))
+      FileUtils.cp_r(source, dest)
+      puts "middleman-pagegroups installed the project in\n#{dest}" 
+    end
+
+
+    ############################################################
+    # partials
+    ############################################################
+    desc 'partials [<directory>]', 'Install the sample partials.'
+    long_desc <<-HEREDOC
+`partials` will produce sample partial files into your current working
+directory, or into <directory> if you specify one. These partials can
+then be used using Middleman's `partials` helper in your own projects.
+    
+    HEREDOC
+    def partials(*args)
+      dest = File.expand_path( args.empty? ? File.join('.') : args[0] )
+      unless File.writable?( dest )
+        puts "middleman-pagegroups can't seem to write to #{dest}."
+        exit 1
+      end
+
+      MMPartials::MM_PARTIALS.each do |p|
+        filename = File.join( dest, p[:filename] )
+        puts "writing #{filename}"
+        File.open( filename, 'w' ) { |f| f.write( p[:content]) }
+      end
+
+      puts "middleman-pagegroups installed #{MMPartials::MM_PARTIALS.count} partials in\n#{dest}"
+    end
+
+
+    ############################################################
+    # __print_version
+    ############################################################
+    desc '--version, -v', 'print the version'
+    def __print_version
+      puts "middleman-pagegroups version #{Middleman::MiddlemanPageGroups::VERSION}"
+    end
+
+  end # class Cli
+
+end # module MiddlemanPagegroupsCli
+
+
+###########################################################
+# Main
+###########################################################
+
+MiddlemanPageGroupsCli::Cli.start(ARGV)

@@ -1,0 +1,55 @@
+---
+title:     Sample Partials
+id:        partials
+blurb:     A look at the included sample partials available with <code>middleman-pagegroups</code>.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+Although `middleman-pagegroups` has a useful set of [helpers](helpers), you can
+use its sample partials instead. This gives you the obvious ability to customize
+them to suit your own needs.
+
+For convenience you can find them in this sample project’s `source/partials/`
+directory, or you can generate them on demand if `middleman-pagegroups` gem is
+installed:
+
+~~~ bash
+middleman-pagegroups partials <directory>
+~~~
+
+If you don’t specify a `<directory`> then the files will be placed into your
+current working directory.
+
+## The partials
+
+The partials are named identically to the [helpers of the same name](helpers),
+and they work identically and take the same optional `locals` parameters. For
+details of these partials, the links lead to [Helpers](helpers).
+
+**Caveat**: the `locals` parameters work _almost_ the same. For partials, you
+must **not** use `:class`; use `:klass` instead. This is a limitation due to
+the way that Middleman (really, Padrino) implements partials. These `locals`
+become actual, local variables in the helpers, and the word “class” is not a
+valid local variable name (it’s a reserved word).
+{:.note}
+
+* * *
+
+- [`_nav_breadcrumbs.haml`](helpers.html#navbreadcrumbs-locals-)
+- [`_nav_breadcrumbs_alt.haml`](helpers.html#navbreadcrumbsalt-locals-)
+- [`_nav_brethren_index.haml`](helpers.html#navbrethren-locals-)
+- [`_nav_brethren.haml`](helpers.html#navbrethrenindex-locals-)
+- [`_nav_legitimate_children.haml`](helpers.html#navlegitimatechildren-locals-)
+- [`_nav_prev_next.haml`](helpers.html#navprevnext-locals-)
+- [`_nav_toc_index.haml`](helpers.html#navtocindex-locals-)
+
+* * *
+
+Middleman geek knowledge: when you generate partials using the
+`middleman-pagegroups partials` command, it’s not just a file copy. The partials
+are generated from the same source code that is used by the helpers, except for
+`_nav_toc_index.haml` which has some tricky recursion going on.
+{:.note}

@@ -1,0 +1,26 @@
+= wrap_layout ('layout'.to_sym) do
+  .container-logo-small
+    .yield-content
+      = image_tag 'middleman-pagegroups-small.png', :alt => 'middleman-pagegroups logo'
+      ~ yield
+      - if current_page.navigator_eligible?
+        %hr
+        = nav_prev_next
+
+    - if !current_page.brethren.to_a.empty? || content_for?(:seeAlso)
+      %hr/
+
+    .related_topics
+      %h1 Related Topics
+      = nav_brethren_index
+
+      - if content_for?(:seeAlso)
+        %h1 See Also
+        = yield_content :seeAlso
+
+-#
+  This template is suitable for general pages that aren’t meant to participate
+  within a group. It does show related pages followed by :seeAlso content at
+  the bottom on the page, but it’s not as obvious for simple navigation as the
+  template-logo-medium. It features a small version of your help logo in the
+  top left, followed by the title.

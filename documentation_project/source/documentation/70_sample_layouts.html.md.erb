@@ -1,0 +1,92 @@
+---
+title:     Sample Layouts
+id:        layouts
+blurb:     The sample layouts are good models for integrating <code>middleman-pagegroups</code>
+           in your own projects. Let’s have a look.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+To get the most benefit from `middleman-pagegroups` you will most likely want
+to use [partials](partials) and/or [helpers](helpers) in your layouts. This 
+sample project does such.
+
+Let’s examine a couple of examples from this very project.
+
+
+## `template-logo-medium`
+
+Most of this site’s pages use this layout.
+
+~~~ haml
+= wrap_layout ('layout'.to_sym) do
+  .container-logo-medium
+    %div
+      .yield-content
+        ~ yield
+        - if current_page.navigator_eligible?
+          %hr
+          = nav_prev_next
+
+    %div
+      %div
+        = image_tag 'middleman-pagegroups-small.png', :alt => 'middleman-pagegroups logo'
+      .related_topics
+        %h1 Related Topics
+        = nav_brethren_index
+
+        - if content_for?(:seeAlso)
+          %h1 See Also
+          = yield_content :seeAlso
+~~~
+
+We can immediately see that this layout is wrapped by another layout, `layout`,
+that we’ll look at shortly. Within this file are two interesting sections:
+
+~~~ haml
+        - if current_page.navigator_eligible?
+          %hr
+          = nav_prev_next
+~~~
+
+This checks the current page with the `resource.navigator_eligible?` method,
+and then includes the navigation controls using the `nav_prev_next` helper if
+it’s so. This page (the one you’re looking at), includes the navigator controls
+as a result of this code.
+
+Next, this code:
+
+~~~ haml
+        %h1 Related Topics
+        = nav_brethren_index
+~~~
+
+…provides all of the Related Topics for every page of this site using this
+template (which is most of them).
+
+Have a look at `template-logo-large` and `template-logo-small` to find similar
+code.
+
+
+## `layout`
+
+The `layout.haml` provides the outer wrapper for every page of this
+documentation. Aside from providing all of the required HTML boiler plate, it
+contains some interesting code:
+
+~~~ haml
+  %body{:class => "#{page_classes}"}
+    %nav#breadcrumbs
+      = nav_breadcrumbs_alt
+    = yield
+~~~
+
+First, it uses the `page_classes` helper that Middleman projects do by default,
+but in this case the `page_name` and `page_group` will be included. This isn’t
+used by any CSS in this particular project, but it’s available when needed.
+
+Also because this is the outer wrapper for every page, it's a good place to
+add the breadcrumbs navigator at the top of the page, using the
+`nav_breadcrumbs_alt` helper.

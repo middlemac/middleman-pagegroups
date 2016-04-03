@@ -1,0 +1,85 @@
+---
+title:     Directory and File Organization
+id:        directory_organization
+blurb:     Organized directory structures enable most of the automatic features
+           of <code>middleman-pagegroups</code>.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+Directory organization is one of key parts of letting `middleman-pagegroups`
+take the hassle out of managing content for you.
+
+Briefly the role of the directory layout convention is this:
+
+- Directories equate to groups.
+- Directory names equate to the group names.
+- Each file in a directory, except for `index.html`, constitutes a member of
+  the group.
+- The `index.html` file in a directory serves as the placeholder for the
+  `parent` of the group.
+
+
+Each group must include at least one file that will render into `index.html`.
+This file serves as the parent to the group. As such, the top-level document
+of any project is `source/html.index` which is a familiar expectation in any
+HTML project, and the default, top-level document for any nested directory is
+also `index.html`, which is consistent with practices to which you are no doubt
+already accustomed.
+
+One important novelty of `middleman-pagegroups` is that a group’s `index.html`
+file is considered a child of parent group. For example in this documentation
+project’s hierarchy…
+
+~~~
+source/
+  index.html         <- root object, parent to license, toc, and documentation/index.html
+  license.html       <- Sort order is 20. Member of the `source` group.
+  toc.html           <- Sort order is 30. Member of the `source` group.
+  documentation/
+    index.html       <- Sort order is 10, and is a member of the `source` group!
+    concepts.html
+    directory_organization.html
+    …
+~~~
+
+…the files `license.html`, `toc.html`, and `documentation/index.html` are _all_
+children of the `source` group. The file `source/index.html` is the child of
+no one; it is the root document.
+
+Another way to look at this is like this: the directory `documentation/`, i.e.,
+the group `documentation`, is a member of the `source` group. It’s represented
+by its `index.html` file.
+{:.note}
+
+
+## Nesting
+
+Groups can be arbitrarily nested as deep as you wish. There’s probably a limit
+that would cause a stack overflow and crash, but you’re not likely to reach it
+unless you try deliberately.
+
+
+## Sort Order
+
+Although [Front Matter](frontmatter) is an appropriate place to specify a
+page’s `:order`, it’s sometimes convenient for developers to arrange files in
+order in their filesystem, too. This is supported by `middleman-pagegroups`,
+too.
+
+Simply prefix your filename with any integer followed by an underscore, e.g.,
+the source file for this page is `20_directory_organization.html.md.erb`.
+
+In order to avoid ugly URIs (e.g., `20_directory_organization.html`) make sure
+that your [`config.rb`](config) file sets `strip_file_prefixes` to `true`, which
+will rewrite page names without the order specifiers (e.g.,
+`directory_organization.html`).
+
+Filename sort order prefixes only work for non-group files, however. Groups and
+their `index.html` files cannot be magically numbered in this way. You _must_
+use the front matter `:order` key in `index.html` files, instead.
+{:.note}
+
+Front matter `:order` will override any order specified by file names.

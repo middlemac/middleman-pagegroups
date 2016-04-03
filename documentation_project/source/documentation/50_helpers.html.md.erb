@@ -1,0 +1,252 @@
+---
+title:     Helpers
+id:        helpers
+blurb:     You will use helpers to design your own partials and templates, and
+           to produce automatic navigation output.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+This extension extends one of Middleman’s built-in helpers, as well as provides
+helpers to access some of the extension defaults within your helpers, partials,
+and pages. Also included are several helpers that generate reasonable automatic
+navigation output into your pages.
+
+## Extended Helpers
+
+Some of Middleman’s built-in helpers are extended in order to offer more
+features.
+
+`page_classes`
+
+  : If you’ve enabled `extend_page_class` in your [`config.rb`](config)
+    file, then `middleman-pagegroups` will add the current `page_name` and
+    `page_group` to the `page_classes` output. Default Middleman project
+    templates include this as the `<body class="…"` content.
+    
+    Here is the result of `page_classes` right now: `<%= page_classes %>`
+
+
+## Access to Extension Configuration Settings
+
+[Configuration settings](config) that are useful for the output-producing
+helpers and for the default partials are exposed via helpers. They are shown
+below, and the current values for this project are shown as an example.
+
+`nav_breadcrumbs_class`
+
+  : Exposes `nav_breadcrumbs_class`, currently `<%= nav_breadcrumbs_class %>`
+
+`nav_breadcrumbs_alt_class`
+
+  : Exposes `nav_breadcrumbs_alt_class`, currently `<%= nav_breadcrumbs_alt_class %>`
+
+`nav_breadcrumbs_alt_label`
+
+  : Exposes `nav_breadcrumbs_alt_label`, currently `<%= nav_breadcrumbs_alt_label %>`
+
+`nav_brethren_class`
+
+  : Exposes `nav_brethren_class`, currently `<%= nav_brethren_class %>`
+
+`nav_brethren_index_class`
+
+  : Exposes `nav_brethren_index_class`, currently `<%= nav_brethren_index_class %>`
+
+`nav_legitimate_children_class`
+
+  : Exposes `nav_legitimate_children_class`, currently `<%= nav_legitimate_children_class %>`
+
+`nav_prev_next_class`
+
+  : Exposes `nav_prev_next_class`, currently `<%= nav_prev_next_class %>`
+
+`nav_prev_next_label_prev`
+
+  : Exposes `nav_prev_next_label_prev`, currently `<%= nav_prev_next_label_prev %>`
+
+`nav_prev_next_label_next`
+
+  : Exposes `nav_prev_next_label_next`, currently `<%= nav_prev_next_label_next %>`
+
+`nav_toc_index_class`
+
+  : Exposes `nav_breadcrumbs_alt_class`, currently `<%= nav_breadcrumbs_alt_class %>`
+
+Note that these are all read-only. These aren’t variables; they’re helpers, and
+they are simply providing a variable value to you.
+{:.note}
+
+## Output Helpers
+
+Output helpers generate most of the automatic navigation features. They’re handy
+to use, but you may consider using the [partials](partials) instead, or writing
+your own.
+
+Each of these helpers accepts an optional parameter called `locals` which, if
+used, must be a hash. For the locals to be useful, the hash must consist of
+useful key value pairs.
+
+All of the helpers accept a `:class` or `:klass` local. If present then the
+navigation feature enclose `div` will be set to that class, otherwise the
+default from your [config.rb](config) will be used.
+
+Middleman geek knowledge: these helpers are implemented internally as partials
+using the same code as used to generate the sample partials, except for
+`nav_toc_index` which has some tricky recursion. This keeps things DRY, and
+is the reason that the parameter is referred to a `locals`. It’s also the
+reason that we have to internally use `klass` instead of `class`.
+{:.note}
+
+For each helper below, the information shown consists of:
+
+  - A brief description of the helper.
+  - A description of the `locals` keys that can be used.
+  - Sample HTML output, generated from using the helper in this project.
+
+* * *
+
+### `nav_breadcrumbs( locals )`
+
+Generate a breadcrumbs structure as an `<ul>`. The trailing element is
+the current page.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+      
+~~~ html
+<%= nav_breadcrumbs %>
+~~~
+
+* * *
+
+### `nav_breadcrumbs_alt( locals )`
+
+Generate the breadcrumbs structure, alternate form, wherein the trailing element
+consists of a label indicating “current page,” as an `<ul>`.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+  
+`:label`
+
+  : Specify the label to use to mark the current page.
+      
+~~~ html
+<%= nav_breadcrumbs_alt %>
+~~~
+
+* * *
+
+### `nav_brethren( locals )`
+
+Generate a fuller list of related topics, including blurbs if present, as a
+`<dl>`.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+
+`:start`
+
+  : The resource from which to start the list, e.g., `current_page` or
+    `current_page.breadcrumbs.first`, or some other resource. The default will
+    always be `current_page` if this local is not declared.
+
+~~~ html
+<%= nav_brethren %>
+~~~
+
+* * *
+
+### `nav_brethren_index( locals )`
+
+Generates a condensed list of brethren, omitting blurbs, as a `<dl>`.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+
+`:start`
+
+  : The resource from which to start the list, e.g., `current_page` or
+    `current_page.breadcrumbs.first`, or some other resource. The default will
+    always be `current_page` if this local is not declared.
+
+~~~ html
+<%= nav_brethren_index %>
+~~~
+
+* * *
+
+### `nav_legitimate_children( locals )`
+
+Generate a fuller list of related topics, including blurbs if present, as a
+`<dl>`.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+
+`:start`
+
+  : The resource from which to start the list, e.g., `current_page` or
+    `current_page.breadcrumbs.first`, or some other resource. The default will
+    always be `current_page` if this local is not declared.
+
+~~~ html
+<%= nav_legitimate_children :start => current_page.breadcrumbs.first %>
+~~~
+
+Because this page has no children at all, the example output above shows output
+using `:start => current_page.breadcrumbs.first`. You will note, though, that
+because it was generated on _this_ page, all of the links appropriately reflect
+the correct path to get to those pages from _here_.
+{:.note}
+
+* * *
+
+### `nav_prev_next( locals )`
+
+Generate a previous and next button as two anchors nested within a `<div>`.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+
+`:label_previous`
+
+  : Label for previous button.
+  
+`:label_next`
+
+  : Label for next button.
+
+~~~ html
+<%= nav_prev_next %>
+~~~
+
+* * *
+
+### `nav_toc_index( locals )`
+
+Generate a nested `<ul>` structure representing the complete table of contents
+from any particular starting point.
+
+`:class`
+
+  : Specify the class of the containing `<div>`.
+
+`:start`
+
+  : The resource from which to start the index, e.g., `current_page` or
+    `current_page.breadcrumbs.first`, or some other resource. The default will
+    always be `current_page` if this local is not declared.
+  
+~~~ html
+<%= nav_toc_index :start => current_page.breadcrumbs.first %>
+~~~
