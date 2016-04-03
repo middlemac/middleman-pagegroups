@@ -46,24 +46,6 @@ And then open your web browser to the address specified (typically
 `localhost:4567`).
 
 
-Quick Documentation
--------------------
-
-[Middleman](https://middlemanapp.com/) 4.1.6 or newer is required. Earlier
-point versions of Middleman do not have the necessary support for this
-extension.
-
-Once setup and configured, you can build multiple targets like so:
-
-TO-DO
-
-
-Added Features
---------------
-
-TO-DO
-
-
 Middlemac
 ---------
 
