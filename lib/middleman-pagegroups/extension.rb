@@ -112,7 +112,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #--------------------------------------------------------
       def resource.brethren
         self.siblings
-          .find_all { |p| p.sort_order != 0 && !p.ignored && p != self }
+          .find_all { |p| p.sort_order && p.sort_order != 0 && !p.ignored && p != self }
           .sort_by { |p| p.sort_order }
       end
 
@@ -171,7 +171,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #--------------------------------------------------------
       def resource.legitimate_children
         self.children
-          .find_all { |p| p.sort_order !=0 && !p.ignored }
+          .find_all { |p| p.sort_order && p.sort_order != 0 && !p.ignored }
           .sort_by { |p| p.sort_order }
       end
 
