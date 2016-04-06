@@ -1,0 +1,25 @@
+---
+title:     Nested Group Example
+blurb:     See an example of a nested group, where sort order is specified only
+           by the front matter.
+layout:    template-logo-large
+navigator: false
+---
+
+# <%= current_page.data.title %>
+
+- All of these documents are part of the `nested_folder` group. This is because
+  the source directory they reside in is named `nested_folder/`.
+
+- This particular page is the index page of the group, and is considered the
+  parent of all of the other files.
+  
+  - This page does not have an `:order` key set; its order is based on its
+    original containing directory name.  
+
+  - The other pages are set via their `:order` keys instead of a via a naming
+    prefix.
+
+* * *
+
+<%= nav_legitimate_children :class => 'table_contents' %>

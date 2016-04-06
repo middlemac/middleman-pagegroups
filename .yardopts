@@ -1,0 +1,8 @@
+--no-private
+--markup=markdown
+--load yard/yard_extensions.rb
+--exclude middleman-pagegroups/version.rb
+--exclude middleman-pagegroups/partials.rb
+--one-file
+--readme yard/readme.md
+--title middleman-pagegroups

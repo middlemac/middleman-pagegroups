@@ -1,0 +1,19 @@
+---
+title:    Another File
+blurb:    This is just a file with a sort order of 10 specified in its front
+          matter.
+layout:   template-logo-medium
+order:    10
+---
+
+# <%= current_page.data.title %>
+
+<%= current_page.data.blurb %>
+
+Current Page: <%= current_page.url %>
+
+Parent: <%= current_page.parent.url %>
+
+<% siblings = current_page.siblings.collect { |p| p.url } %>
+Siblings: <%= siblings %>
+

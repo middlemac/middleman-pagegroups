@@ -14,56 +14,52 @@
 
 #==========================================================================
 # Extension Setup
-#  Note that middleman-targets adds configuration parameters to the base
-#  Middleman application (supported feature in 4.0+); there are *not*
-#  extension options. Additionally if middleman-targets is in your Gemfile
-#  then it is also activated automatically.
 #==========================================================================
-activate :MiddlemanPageGroups do |config|
+activate :MiddlemanPageGroups do |options|
 
   # Indicate whether or not numeric file name prefixes used for sorting
   # pages should be eliminated during output. This results in cleaner
   # URI's. Helpers such as `page_name` and Middleman helpers such as
   # `page_class` will reflect the pretty name.
-  config.strip_file_prefixes = true
+  options[:strip_file_prefixes] = true
 
   # Indicates whether or not Middleman's built-in `page_class` helper is
   # extended to include the page_group and page_name.
-  config.extend_page_class = true
+  options[:extend_page_class] = true
 
   # the following options provide defaults for the built-in helpers, and
   # also work with the sample partials if you choose to install them.
   # They'll also work in your own partials and helpers, of course.
 
   # Default css class for the nav_breadcrumbs helper/partial.
-  config.nav_breadcrumbs_class = 'breadcrumbs'
+  options[:nav_breadcrumbs_class] = 'breadcrumbs'
 
   # Default css class for the nav_breadcrumbs_alt helper/partial.
-  config.nav_breadcrumbs_alt_class = 'breadcrumbs'
+  options[:nav_breadcrumbs_alt_class] = 'breadcrumbs'
 
   # Default "current page" label for the nav_breadcrumbs_alt helper/partial.
-  config.nav_breadcrumbs_alt_label = 'Current page'
+  options[:nav_breadcrumbs_alt_label] = 'Current page'
 
   # Default css class for the nav_brethren helper/partial.
-  config.nav_brethren_class = 'table_contents'
+  options[:nav_brethren_class] = 'table_contents'
 
   # Default css class for the nav_brethren_index helper/partial.
-  config.nav_brethren_index_class = 'related-topics'
+  options[:nav_brethren_index_class] = 'related-topics'
 
   # Default css class for the nav_legitimate_children helper/partial.
-  config.nav_legitimate_children_class = 'table_contents'
+  options[:nav_legitimate_children_class] = 'table_contents'
 
   # Default css class for the nav_prev_next helper/partial.
-  config.nav_prev_next_class = 'navigate_prev_next'
+  options[:nav_prev_next_class] = 'navigate_prev_next'
 
   # Default "previous" label text for the nav_prev_next helper/partial.
-  config.nav_prev_next_label_prev = 'Previous'
+  options[:nav_prev_next_label_prev] = 'Previous'
 
   # Default "next" label text for the nav_prev_next helper/partial.
-  config.nav_prev_next_label_next = 'Next'
+  options[:nav_prev_next_label_next] = 'Next'
 
   # Default css class for the nav_toc_index helper/partial.
-  config.nav_toc_index_class = 'help_map'
+  options[:nav_toc_index_class] = 'help_map'
 
 end
 
@@ -90,7 +86,7 @@ helpers do
   end
 
   def product_version
-    '1.0.2'
+    '1.0.3'
   end
 
   def product_uri

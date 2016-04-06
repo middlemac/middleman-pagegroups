@@ -1,14 +1,12 @@
 ################################################################################
-# partials
-#  Here's the deal: this is an extension and not an extension+template, so in
-#  order to provide some modicum of usefulness to users, we're providing some
-#  template-like helpers in the extension. This file constitutes the source
-#  for them, with the added benefit that we can recycle the values in the
-#  console application and generate real partial templates for users that
-#  prefer pure MVC.
+# Given that `middleman-pagegroups` is an extension and not a template, we
+# don’t have partials. However we are capable of building the partials using
+# the CLI, and using this same code base provide helpers.
+#
+# Because of recursion, `MM_TOC_INDEX` will only be used to build a partial;
+# the helper internally generates identical output but is constructed just a
+# bit differently.
 ################################################################################
-
-
 module MMPartials
 
   MM_BREADCRUMBS = <<HEREDOC
@@ -156,8 +154,8 @@ HEREDOC
 
 
   #########################################################
-  # MM_PARTIALS
-  #  Used by the CLI application to build partial files.
+  # The CLI application will use this array to generate
+  # partials using the given :filename with the :content.
   #########################################################
   MM_PARTIALS = [
       { :filename => '_nav_breadcrumbs.haml',         :content => MM_BREADCRUMBS         },
@@ -168,6 +166,5 @@ HEREDOC
       { :filename => '_nav_prev_next.haml',           :content => MM_PREV_NEXT           },
       { :filename => '_nav_toc_index.haml',           :content => MM_TOC_INDEX           },
   ]
-
 
 end # module

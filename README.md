@@ -46,6 +46,22 @@ And then open your web browser to the address specified (typically
 `localhost:4567`).
 
 
+Rake Tasks
+----------
+
+Run tests:
+
+~~~ bash
+rake test
+~~~
+
+Generate YARD documentation:
+
+~~~ bash
+rake yard
+~~~
+
+
 Middlemac
 ---------
 
@@ -59,11 +75,11 @@ navigation.
 License
 -------
 
-MIT. See `LICENSE.md`.
+MIT. See [`LICENSE.md`](LICENSE.md).
 
 
 Changelog
 ---------
 
-See `CHANGELOG.md` for point changes, or simply have a look at the commit
+See [`CHANGELOG.md`](CHANGELOG.md) for point changes, or simply have a look at the commit
 history for non-version changes (such as readme updates).

@@ -2,6 +2,8 @@
 $:.push File.expand_path('../lib', __FILE__)
 require 'middleman-pagegroups/version'
 
+mm_needed = ['~> 4.1', '>= 4.1.7']
+
 Gem::Specification.new do |s|
   s.name        = 'middleman-pagegroups'
   s.version     = Middleman::MiddlemanPageGroups::VERSION
@@ -19,8 +21,14 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   
   # The version of middleman-core your extension depends on
-  s.add_runtime_dependency('middleman-core', ['~> 4.1', '>= 4.1.6'])
+  s.add_runtime_dependency('middleman-core', mm_needed)
 
   # Additional dependencies
-  s.add_runtime_dependency('middleman-cli', ['~> 4.1', '>= 4.1.6'])
+  s.add_runtime_dependency('middleman-cli', mm_needed)
+
+  # Development dependencies
+  s.add_development_dependency 'middleman', mm_needed
+  s.add_development_dependency 'bundler',   '>= 1.6'
+  s.add_development_dependency 'rake',      '>= 10.3'
+
 end
