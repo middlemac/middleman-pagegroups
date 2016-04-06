@@ -1,0 +1,47 @@
+---
+title:     Command Line Interface
+id:        cli
+blurb:     <code>middleman-pagegroups</code> has a small CLI.
+layout:    template-logo-medium
+navigator: true
+---
+
+# <%= current_page.data.title %>
+
+`middleman-pagegroups` has a small command line interface that might be useful
+for generating sample documentation or installing the sample partials.
+
+The CLI takes the format:
+
+~~~ bash
+middleman-pagegroups command [options]
+~~~
+
+…where the following commands are available.
+
+`documentation`
+
+ : Produces a sample project named `middleman-pagegroups-docs/` in your current
+   working directory. This sample uses the features of this gem. You can then
+   serve this new project to read the documentation by:
+
+~~~ bash
+cd middleman-pagegroups-docs
+bundle install
+bundle exec middleman server
+~~~
+
+
+`help`
+
+ : Displays CLI usage help.
+ 
+`partials` [_directory_]
+
+ : Produces sample partial files into your current working directory, or into
+   _`directory`_ if you specify one. These partials can then be used using
+   Middleman's `partials` helper in your own projects.
+ 
+`--version` or `-v`
+
+ : Displays the version of `middleman-pagegroups`.

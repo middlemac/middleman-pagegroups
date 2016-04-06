@@ -1,0 +1,6 @@
+Stray.txt
+---------
+
+This is just a non-rendered file that's tagging along for the ride. It
+demonstrates that non-page numbered assets are put into the proper directory
+when the directory is renamed.

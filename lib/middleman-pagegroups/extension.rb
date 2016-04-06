@@ -1,10 +1,12 @@
-################################################################################
-# extension.rb
-#  This file constitutes the framework for the bulk of this extension.
-################################################################################
 require 'middleman-core'
 require 'middleman-pagegroups/partials'
 
+################################################################################
+# This extension provides advanced navigation tools and helpers for grouping
+# pages by topic and navigating between them. It includes support for tables
+# of content, related pages, breadcrumbs, and more.
+# @author Jim Derry <balthisar@gmail.com>
+################################################################################
 class MiddlemanPageGroups < ::Middleman::Extension
 
 
@@ -26,20 +28,157 @@ class MiddlemanPageGroups < ::Middleman::Extension
   option :nav_prev_next_label_next,      'Next',           'Default "next" label text for the nav_prev_next helper/partial.'
   option :nav_toc_index_class,           nil,              'Default css class for the nav_toc_index helper/partial.'
 
+  # @!group Extension Configuration
+
+  # @!attribute [rw] options[:strip_file_prefixes]=
+  # If `true` leading numbers used for sorting files will be removed for
+  # presentation purposes. This makes it possible to neatly organize your
+  # source files in their presentation order on your filesystem but output
+  # nice filenames without ugly prefix numbers.
+  # @param [Boolean] value `true` or `false` to enable or disable this feature.
+  # @return [Boolean] Returns the current value of this option.
+
+  # @!attribute [rw] options[:extend_page_class]=
+  # If true then the default **Middleman** `page_class` helper will be extended
+  # to include simple `group` and `page_name` for each resource.
+  # @param [Boolean] value `true` or `false` to enable or disable this feature.
+  # @return [Boolean] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_breadcrumbs_class]=
+  # Default css class for the `nav_breadcrumbs` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_breadcrumbs_alt_class]=
+  # Default css class for the `nav_breadcrumbs_alt` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_breadcrumbs_alt_label]=
+  # Default "current page" label for the `nav_breadcrumbs_alt` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_brethren_class]=
+  # Default css class for the `nav_brethren` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_brethren_index_class]=
+  # Default css class for the `nav_brethren_index` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_legitimate_children_class]=
+  # Default css class for the `nav_legitimate_children` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_prev_next_class]=
+  # Default css class for the `nav_prev_next` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_prev_next_label_prev]=
+  # Default "previous" label text for the `nav_prev_next` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_prev_next_label_next]=
+  # Default "next" label text for the `nav_prev_next` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!attribute [rw] options[:nav_toc_index_class]=
+  # Default css class for the `nav_toc_index` helper/partial.
+  # @param [String] value The `class` attribute value to use for this item’s
+  #   containing element.
+  # @return [String] Returns the current value of this option.
+
+  # @!endgroup
+
 
   ############################################################
   #  Sitemap manipulators.
   #    Add new methods to each resource.
   ############################################################
+
+  #--------------------------------------------------------
+  # We must ensure that for any directory the index_file
+  # is first. This is so that we can check it for a page
+  # order and rename the containing directory in output.
+  # @!visibility private
+  #--------------------------------------------------------
+  def resource_sort_comparator( x, y )
+    if File.basename(x.path) == app.config[:index_file]
+      -1
+    else
+      if File.dirname(x.path) == File.dirname(y.path)
+        return File.basename(x.path) <=> File.basename(y.path)
+      else
+        return File.dirname(x.path) <=> File.dirname(y.path)
+      end
+    end
+  end
+
+
+  #--------------------------------------------------------
+  # Add our own resource methods to each resource in the
+  # site map.
+  # @!visibility private
+  #--------------------------------------------------------
   def manipulate_resource_list(resources)
 
-    resources.each do |resource|
+    resources.sort { |a,b| resource_sort_comparator(a,b) }
+        .each do |resource|
 
       #--------------------------------------------------------
-      # page_name
-      #    Make page_name available for each page. This is the
-      #    file base name after any renaming has occurred.
-      #    Useful for assigning classes, etc.
+      # Return the parent of the resource. This implementation
+      # corrects a bug in **Middleman** as of 4.1.7 wherein
+      # **Middleman** doesn’t return the parent if the the
+      # directory has been renamed for output.
+      # @return [Sitemap::Resource] The resource instance of
+      #   the resource’s parent.
+      #--------------------------------------------------------
+      def resource.parent
+        root = path.sub(/^#{::Regexp.escape(traversal_root)}/, '')
+        parts = root.split('/')
+
+        tail = parts.pop
+        is_index = (tail == @app.config[:index_file])
+
+        if parts.empty?
+          return is_index ? nil : @store.find_resource_by_path(@app.config[:index_file])
+        end
+
+        test_expr = parts.join('\\/')
+        # eponymous reverse-lookup
+        found = @store.resources.find do |candidate|
+          candidate.path =~ %r{^#{test_expr}(?:\.[a-zA-Z0-9]+|\/)$}
+        end
+
+        if found
+          found
+        else
+          parts.pop if is_index
+          @store.find_resource_by_path("#{parts.join('/')}/#{@app.config[:index_file]}")
+        end
+      end
+
+      #--------------------------------------------------------
+      # Make `page_name` available for each resource. This is
+      # the file’s base name after any renaming has occurred.
+      # Useful for assigning classes, etc.
+      # @return [String] The `page_name` of the current page.
       #--------------------------------------------------------
       def resource.page_name
         File.basename( self.destination_path, '.*' )
@@ -47,22 +186,26 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  page_group
-      #    Make page_group available for each page. This is
-      #    the source parent directory (not the request path).
-      #    Useful for for assigning classes, and/or group
-      #    conditionals.
+      # Make `page_group` available for each resource.
+      # Useful for for assigning classes, and/or group
+      # conditionals.
+      # @return [String] The `page_group` of the current page.
       #--------------------------------------------------------
       def resource.page_group
-        File.basename( File.split( self.source_file )[0] )
+        result = File.basename( File.split( self.destination_path )[0] )
+        if result == '.'
+          result = @app.config[:source]
+        end
+        result
       end
 
 
       #--------------------------------------------------------
-      #  group_count
-      #    Returns the quantity of pages in the current
-      #    page’s group. This is NOT the count of the number
-      #    of an index page's legitimate children.
+      # Returns the quantity of pages in the current page’s
+      # group, including this current page, i.e., the number
+      # of `brethren + 1`.
+      # @return [Integer] The total number of pages in the
+      #   this page’s current group.
       #--------------------------------------------------------
       def resource.group_count
         self.brethren.count + 1
@@ -70,10 +213,15 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  sort_order
-      #    Returns the page sort order or 0. This is set
-      #    initial population of the resource map, and made
-      #    available here.
+      # Returns the page sort order or 0 if no page sort order
+      # was applied.
+      #
+      # Pages without a sort order can still be linked to;
+      # they simply aren't brethren or legitimate children,
+      # and so don’t participate in any of the automatic
+      # navigation features.
+      # @return [Integer] The current resource’s sort order
+      #   within its group, or 0 if no sort order was applied.
       #--------------------------------------------------------
       def resource.sort_order
         options[:sort_order]
@@ -81,10 +229,12 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  page_sequence
-      #    Returns the page sequence amongst all of the
-      #    brethren. Can be uses as a page number surrogate.
-      #    Base 1.
+      # Returns the page sequence amongst all of the brethren,
+      # and can be used as a page number surrogate. The first
+      # page is 1. Pages without a sort order will have a `nil`
+      # `page_sequence`.
+      # @return [Integer, Nil] The current page sequence of
+      #   this resource among its brethren.
       #--------------------------------------------------------
       def resource.page_sequence
         if self.sort_order == 0
@@ -100,15 +250,17 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  brethren
-      #    Returns an array of all of the siblings of the
-      #    specified page, taking into account their
-      #    eligibility for display.
-      #      - is not already the current page.
-      #      - has a sort_order.
-      #      - is not ignored.
-      #    Returned array will be:
-      #      - sorted by sort_order.
+      # Returns an array of all of the siblings of this page,
+      # taking into account their eligibility for display.
+      #
+      #  * is not already the current page.
+      #  * has a `sort_order`.
+      #  * is not ignored.
+      #
+      # The returned array will be sorted by each item’s
+      # `sort_order`.
+      # @return [Array<Sitemap::Resource>] An array of
+      #   resources.
       #--------------------------------------------------------
       def resource.brethren
         self.siblings
@@ -118,8 +270,10 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  brethren_next
-      #    Returns the next sibling based on order or nil.
+      # Returns the next sibling based on order, or `nil` if
+      # there is no next sibling.
+      # @return [Sitemap::Resource] The resource instance of
+      #   the next sibling.
       #--------------------------------------------------------
       def resource.brethren_next
         if self.sort_order == 0
@@ -131,8 +285,10 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  brethren_previous
-      #    Returns the previous sibling based on order or nil.
+      # Returns the previous sibling based on order, or `nil`
+      # if there is no previous sibling.
+      # @return [Sitemap::Resource] The resource instance of
+      #   the previous sibling.
       #--------------------------------------------------------
       def resource.brethren_previous
         if self.sort_order == 0
@@ -144,12 +300,17 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  navigator_eligible?
-      #    Determine whether a page is eligible to include a
-      #    previous/next page control based on:
-      #      - the group is set to allow navigation (:navigate)
-      #      - this page is not excluded from navigation. (:navigator => false)
-      #      - this page has a sort_order.
+      # Determines whether a page is eligible to include a
+      # previous/next page control. This is based on:
+      #
+      #  * The group is set to allow navigation via the
+      #    `:navigate` front matter key.
+      #  * This page is not excluded from navigation via the
+      #    use of `:navigator => false` in its front matter.
+      #  * This page has a `sort_order`.
+      #
+      # @return (Boolean) Returns `true` if this pages is
+      #   eligible for a previous/next page control.
       #--------------------------------------------------------
       def resource.navigator_eligible?
         group_navigates = self.parent && self.parent.data['navigate'] == true
@@ -160,14 +321,18 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  legitimate_children
-      #    Returns an array of all of the children of the
-      #    specified page, taking into account their
-      #    eligibility for display.
-      #      - has a sort_order.
-      #      - is not ignored.
-      #    Returned array will be:
-      #      - sorted by sort_order.
+      # Returns an array of all of the children of this
+      # resource, taking into account their eligibility for
+      # display. Each child is legitimate if it:
+      #
+      #  * has a sort_order.
+      #  * is not ignored.
+      #
+      # The returned array will be sorted by each item’s
+      # `sort_order`.
+      #
+      # @return [Array<Sitemap::Resource>] An array of
+      #   resources.
       #--------------------------------------------------------
       def resource.legitimate_children
         self.children
@@ -177,9 +342,9 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
       #--------------------------------------------------------
-      #  breadcrumbs
-      #    Returns an array of pages leading to the current
-      #    page.
+      # Returns an array of resources leading to this resource.
+      # @return [Array<Sitemap::Resource>] An array of
+      #   resources.
       #--------------------------------------------------------
       def resource.breadcrumbs
         hierarchy = [] << self
@@ -201,22 +366,71 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #    If :strip_file_prefixes, then additionally we will
       #    prettify the output page name.
       #========================================================
+      strip = @app.extensions[:MiddlemanPageGroups].options[:strip_file_prefixes]
+      page_name = File.basename(resource.path, '.*')
+      path_part = File.dirname(resource.destination_path)
+
       if resource.content_type && resource.content_type.start_with?('text/html', 'application/xhtml')
-        page_name = File.basename( resource.path, '.*' )
+
+        file_renamed = false
+        # Set the resource's sort order if provided via various means.
         if resource.data.key?('order')
+          # Priority for ordering goes to the :order front matter key.
           sort_order = resource.data['order']
         elsif ( match = /^(\d*?)_/.match(page_name) )
+          # Otherwise if the file has an integer prefix we will use that.
           sort_order = match[1]
-          if @app.extensions[:MiddlemanPageGroups].options[:strip_file_prefixes]
-            path_part = File.dirname( resource.destination_path )
-            name_part = page_name.sub( "#{sort_order}_", '') + File.extname( resource.path )
-            resource.destination_path = File.join( path_part, name_part )
-          end
+        elsif ( match = /^(\d*?)_/.match(path_part.split('/').last) ) && File.basename( resource.path ) == app.config[:index_file]
+          # Otherwise if we're an index file then set the sort order based on
+          # its containing group. Because we sorted the resources, we are sure
+          # that this is the first resource to be processed in this directory.
+          sort_order = match[1]
         else
           sort_order = nil
         end
 
+        # Remove the sort order indicator from the file or directory name.
+        # This will only change the output path for files that have a sort
+        # order. Other files in a renamed directory that needs to have their
+        # paths changed will be changed below.
+        if strip && sort_order
+          path_parts = path_part.split('/')
+          path_parts.last.sub!(/^(\d*?)_/, '')
+          path_part = path_parts.join('/')
+          name_part = page_name.sub( "#{sort_order}_", '') + File.extname( resource.path )
+          if path_part == '.'
+            resource.destination_path = name_part
+          else
+            resource.destination_path = File.join(path_part, name_part)
+          end
+          file_renamed = true
+        end
+
         resource.options[:sort_order] = sort_order.to_i
+
+      end
+      
+      unless file_renamed
+      
+        # For other files, check to see if there's an index file in this source
+        # directory. If so then our rules state it will have a sort order, which
+        # means we can ensure that our output path is without a sorting prefix.
+        # If there is, then make sure OUR immediate destination directory is
+        # the same as the index file’s, in case we've renamed it.
+        index_file = [path_part, app.config[:index_file] ].join('/')
+        index_found = resources.select { |r| r.path == index_file }[0]
+
+        if strip && index_found && index_found.options[:sort_order]
+          path_part = File.dirname(index_found.destination_path)
+          name_part = File.basename(resource.destination_path)
+          if path_part == '.'
+            resource.destination_path = name_part
+          else
+            resource.destination_path = File.join(path_part, name_part)
+          end
+
+        end
+
       end
 
 
@@ -237,9 +451,13 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #--------------------------------------------------------
-    # page_classes
-    #   Extend the built-in page_classes to include the
-    #   naked group and page name.
+    # Extend the built-in page_classes to include the naked
+    # group and page name. The features of this helper are
+    # enabled only if `options[:extend_page_class]` is
+    # `true`.
+    # @return [String] Returns the classes that correspond
+    #   to the site hierarchy.
+    # @group Extended Helpers
     #--------------------------------------------------------
     def page_classes
       if extensions[:MiddlemanPageGroups].options[:extend_page_class]
@@ -256,11 +474,16 @@ class MiddlemanPageGroups < ::Middleman::Extension
     #   them instead of installing partials.
     #########################################################
 
+
     #--------------------------------------------------------
-    # nav_breadcrumbs( locals )
-    #   Generate the breadcrumbs partial.
-    #   locals:
-    #     [:klass] == class name for the list's <div>
+    # Generates a breadcrumbs structure as an `<ul>`. The
+    # trailing element is the current page.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @return [String] An `<ul>` containing the breadcrumbs.
     #--------------------------------------------------------
     def nav_breadcrumbs( locals = {} )
       locals[:klass] = locals.delete(:class) if locals.key?(:class)
@@ -269,11 +492,17 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #--------------------------------------------------------
-    # nav_breadcrumbs_alt( locals )
-    #   Generate the breadcrumbs partial, alternate form.
-    #   locals:
-    #     [:klass] == class name for the list's <div>
-    #     [:label] == label for "Current page"
+    # Generates the breadcrumbs structure, alternate form,
+    # wherein the trailing element consists of a label
+    # indicating “current page,” as an `<ul>`.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @option locals [String] :label The text for the label
+    #   that means “Current page.”
+    # @return [String] An `<ul>` containing the breadcrumbs.
     #--------------------------------------------------------
     def nav_breadcrumbs_alt( locals = {} )
       locals[:klass] = locals.delete(:class) if locals.key?(:class)
@@ -281,12 +510,19 @@ class MiddlemanPageGroups < ::Middleman::Extension
     end
 
     #--------------------------------------------------------
-    # nav_brethren( locals )
-    #   Generate a fuller list of related topics, including
-    #   blurbs if present.
-    #   locals:
-    #     [:klass] == class name for the list's <div>
-    #     [:start] == resource from which to start the list.
+    # Generates a fuller list of related topics as a `<dl>`,
+    # with a link to the page as the definition term and the
+    # page’s front matter `:blurb` as the definition
+    # definition.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @option locals [Sitemap::Resource] :start The resource
+    #   from which to start the list. If not specified,
+    #   then this resource’s brethren will be listed.
+    # @return [String] A `<dl>` containing the list.
     #--------------------------------------------------------
     def nav_brethren( locals = {} )
       locals[:klass] = locals.delete(:class) if locals.key?(:class)
@@ -295,12 +531,17 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #--------------------------------------------------------
-    # nav_brethren_index( locals )
-    #   Generates a condensed list of brethren, omitting
-    #   blurbs.
-    #   locals:
-    #     [:klass]          == class name for the list's <div>
-    #     [:start] == resource from which to start the list.
+    # Generates a condensed list of related topics as an
+    # `<ul>`, omitting the `:blurb` front matter data.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @option locals [Sitemap::Resource] :start The resource
+    #   from which to start the list. If not specified,
+    #   then this resource’s brethren will be listed.
+    # @return [String] An `<ul>` containing the list.
     #--------------------------------------------------------
     def nav_brethren_index(locals = {})
       locals[:klass] = locals.delete(:class) if locals.key?(:class)
@@ -309,11 +550,19 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #--------------------------------------------------------
-    # nav_legitimate_children( locals )
-    #   Generate a list of legitimate children.
-    #   locals:
-    #     [:klass] == class name for the list's <div>
-    #     [:start] == resource from which to start the list.
+    # Generates a fuller list of child topics as a `<dl>`,
+    # with a link to the page as the definition term and the
+    # page’s front matter `:blurb` as the definition
+    # definition.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @option locals [Sitemap::Resource] :start The resource
+    #   from which to start the list. If not specified,
+    #   then this resource’s children will be listed.
+    # @return [String] A `<dl>` containing the list.
     #--------------------------------------------------------
     def nav_legitimate_children(locals = {})
       locals[:klass] = locals.delete(:class) if locals.key?(:class)
@@ -322,12 +571,19 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #--------------------------------------------------------
-    # nav_prev_next( locals )
-    #   Generate a previous and next button.
-    #   locals:
-    #     [:klass]          == class name for the list's <div>
-    #     [:label_previous] == label for previous button
-    #     [:label_next]     == label for next button
+    # Generates a previous and next item as two anchors
+    # nested within a `<div>`. With appropriate CSS this
+    # can be rendered as a set of navigation buttons.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @option locals [String] :label_previous The text for
+    #   the label that means “Previous page.”
+    # @option locals [String] :label_next The text for the
+    #   label that means “Next page.”
+    # @return [String] A `<div>` containing the links.
     #--------------------------------------------------------
     def nav_prev_next(locals = {})
       locals[:klass] = locals.delete(:class) if locals.key?(:class)
@@ -336,14 +592,18 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #--------------------------------------------------------
-    # nav_toc_index( locals )
-    #   Generate a nested table of contents.
-    #   locals:
-    #     [:start] == top-level starting resource.
-    #     [:klass] == class name for the list's <div>
-    #   Note in this case we're going to not use the haml
-    #   template because render won't support the recursion
-    #   we need.
+    # Generate a nested `<ul>` structure representing the
+    # complete table of contents from any particular
+    # starting point.
+    # @param [Hash] locals A hash of key-value pairs that
+    #   are passed to the structure as local variables.
+    # @option locals [String] :klass The `class` attribute
+    #   value that should be assigned to the containing
+    #   element.
+    # @option locals [Sitemap::Resource] :start The resource
+    #   from which to start the list. If not specified,
+    #   then this resource will be used as the root.
+    # @return [String] An `<ul>` containing the list.
     #--------------------------------------------------------
     def nav_toc_index( locals = {} )
       recurse = locals.key?(:recurse) && locals[:recurse]
@@ -379,53 +639,151 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
 
     #########################################################
-    # expose selected defaults
-    #   We want our templates to be able to access the
-    #   extension options for default settings in partials.
+    # @!macro [new] class_helpers
+    #    Both the built-in helpers and the partials (if you
+    #    install them) use these helpers in order to access the
+    #    configuration values. When writing your own partials
+    #    it is generally unnecessary to use these helpers; you
+    #    can simply assign your own class name.
+    #
+    #    The provided helpers and partials use CSS classes, and
+    #    if the class names collide with your own class names
+    #    or fail to meet with your naming standards, then they
+    #    can be changed using the extension options.
     #########################################################
 
+
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_breadcrumbs_class]`. 
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_breadcrumbs_class
       extensions[:MiddlemanPageGroups].options[:nav_breadcrumbs_class]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_breadcrumbs_alt_class]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_breadcrumbs_alt_class
       extensions[:MiddlemanPageGroups].options[:nav_breadcrumbs_alt_class]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_breadcrumbs_alt_label]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_breadcrumbs_alt_label
       extensions[:MiddlemanPageGroups].options[:nav_breadcrumbs_alt_label]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_brethren_class]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_brethren_class
       extensions[:MiddlemanPageGroups].options[:nav_brethren_class]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_brethren_index_class]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_brethren_index_class
       extensions[:MiddlemanPageGroups].options[:nav_brethren_index_class]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_legitimate_children_class]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_legitimate_children_class
       extensions[:MiddlemanPageGroups].options[:nav_legitimate_children_class]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_prev_next_class]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_prev_next_class
       extensions[:MiddlemanPageGroups].options[:nav_prev_next_class]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_prev_next_label_prev]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_prev_next_label_prev
       extensions[:MiddlemanPageGroups].options[:nav_prev_next_label_prev]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_prev_next_label_next]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_prev_next_label_next
       extensions[:MiddlemanPageGroups].options[:nav_prev_next_label_next]
     end
 
+    #--------------------------------------------------------
+    # Returns the value of the the extension option
+    # `options[:nav_toc_index_class]`.
+    #
+    # @!macro class_helpers
+    #
+    # @return [String] Returns the name of the class.
+    # @group CSS Class Helpers
+    #--------------------------------------------------------
     def nav_toc_index_class
       extensions[:MiddlemanPageGroups].options[:nav_breadcrumbs_alt_class]
     end
 
 
   end #helpers
-
 
 end # class MiddlemanPageGroups

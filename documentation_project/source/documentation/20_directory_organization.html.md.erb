@@ -22,11 +22,12 @@ Briefly the role of the directory layout convention is this:
   `parent` of the group.
 
 
-Each group must include at least one file that will render into `index.html`.
-This file serves as the parent to the group. As such, the top-level document
-of any project is `source/html.index` which is a familiar expectation in any
-HTML project, and the default, top-level document for any nested directory is
-also `index.html`, which is consistent with practices to which you are no doubt
+Each group must include at least one file that will render into `index.html` (or
+whatever your `config[:index_file]` is for the more advanced among you). This
+file serves as the parent to the group. As such, the top-level document of any
+project is `source/html.index` which is a familiar expectation in any HTML
+project, and the default, top-level document for any nested directory is also
+`index.html`, which is consistent with practices to which you are no doubt
 already accustomed.
 
 One important novelty of `middleman-pagegroups` is that a group’s `index.html`
@@ -69,17 +70,18 @@ page’s `:order`, it’s sometimes convenient for developers to arrange files i
 order in their filesystem, too. This is supported by `middleman-pagegroups`,
 too.
 
-Simply prefix your filename with any integer followed by an underscore, e.g.,
-the source file for this page is `20_directory_organization.html.md.erb`.
+Simply prefix your filename (including group directories) with any integer
+followed by an underscore, e.g., the source file for this page is
+`20_directory_organization.html.md.erb`.
 
 In order to avoid ugly URIs (e.g., `20_directory_organization.html`) make sure
 that your [`config.rb`](config) file sets `strip_file_prefixes` to `true`, which
 will rewrite page names without the order specifiers (e.g.,
 `directory_organization.html`).
 
-Filename sort order prefixes only work for non-group files, however. Groups and
-their `index.html` files cannot be magically numbered in this way. You _must_
-use the front matter `:order` key in `index.html` files, instead.
+Filename sort order prefixes do not work on `index.html` files for a group; use
+a sort order prefix on its enclosing directory instead. The sample
+`nested_folder` in this project is numbered in this way.
 {:.note}
 
 Front matter `:order` will override any order specified by file names.

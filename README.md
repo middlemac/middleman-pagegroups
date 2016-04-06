@@ -9,7 +9,7 @@ middleman-pagegroups readme
    by topic and navigating between them. It includes support for tables of
    content, related pages, breadcrumbs, and more.
 
-   It is standalone and can be used in any Middleman project.
+   It is standalone and can be used in any **Middleman** project.
 
 
 Install the Gem
@@ -50,7 +50,7 @@ Middlemac
 ---------
 
 This Middleman extension is a critical part of
-[Middlemac](https://github.com/middlemac), the Mac OS X help building system
+[**Middlemac**](https://github.com/middlemac), the Mac OS X help building system
 for Mac OS X applications. However this gem is not Mac OS X specific and can be
 useful in any application for which you want to provide structure and
 navigation.
@@ -59,11 +59,11 @@ navigation.
 License
 -------
 
-MIT. See `LICENSE.md`.
+MIT. See [`LICENSE.md`](LICENSE.md).
 
 
 Changelog
 ---------
 
-See `CHANGELOG.md` for point changes, or simply have a look at the commit
-history for non-version changes (such as readme updates).
+See [`CHANGELOG.md`](CHANGELOG.md) for point changes, or simply have a look at
+the commit history for non-version changes (such as readme updates).

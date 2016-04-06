@@ -1,0 +1,111 @@
+## page_classes helper 
+
+~~~
+page_classes: <%= page_classes %>
+~~~
+
+* * *
+
+## Resource Extensions
+
+~~~
+current_resource.breadcrumbs:<%= current_resource.breadcrumbs || 'nil' %>
+~~~
+
+~~~
+current_resource.brethren:<%= current_resource.brethren || 'nil' %>
+~~~
+
+~~~
+current_resource.brethren_next:<%= current_resource.brethren_next || 'nil' %>
+~~~
+
+~~~
+current_resource.brethren_previous:<%= current_resource.brethren_previous || 'nil' %>
+~~~
+
+~~~
+current_resource.group_count:<%= current_resource.group_count || 'nil' %>
+~~~
+
+~~~
+current_resource.legitimate_children:<%= current_resource.legitimate_children || 'nil' %>
+~~~
+
+~~~
+current_resource.navigator_eligible:<%= current_resource.navigator_eligible? || 'nil' %>
+~~~
+
+~~~
+current_resource.page_group:<%= current_resource.page_group || 'nil' %>
+~~~
+
+~~~
+current_resource.page_name:<%= current_resource.page_name || 'nil' %>
+~~~
+
+~~~
+current_resource.page_sequence:<%= current_resource.page_sequence || 'nil' %>
+~~~
+
+~~~
+current_resource.parent:<%= current_resource.parent || 'nil' %>
+~~~
+
+~~~
+current_resource.sort_order:<%= current_resource.sort_order || 'nil' %>
+~~~
+
+* * *
+
+## Content Helpers
+
+nav_breadcrumbs:
+
+~~~
+<%= nav_breadcrumbs %>
+~~~
+
+nav_breadcrumbs_alt:
+
+~~~
+<%= nav_breadcrumbs_alt %>
+~~~
+
+nav_brethren: 
+
+~~~
+<%= nav_brethren %>
+~~~
+
+nav_brethren_index: 
+
+~~~
+<%= nav_brethren_index %>
+~~~
+
+nav_legitimate_children: 
+
+~~~
+<%= nav_legitimate_children %>
+~~~
+
+nav_prev_next: 
+
+~~~
+<%= nav_prev_next %>
+~~~
+
+nav_toc_index: 
+
+~~~
+<%= nav_toc_index %>
+~~~
+
+nav_toc_index (from top):
+
+~~~
+<%= nav_toc_index(:start => current_page.breadcrumbs.first) %>
+~~~
+
+* * *
