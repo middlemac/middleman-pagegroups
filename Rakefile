@@ -2,9 +2,19 @@ require 'bundler/gem_tasks'
 require 'cucumber/rake/task'
 require 'yard'
 
-ENV['GEM_NAME'] = 'middleman-pagegroups'
+gem_name = 'middleman-pagegroups'
 
+###############################################################################
+# :default
+#   Define the default task.
+###############################################################################
 task :default => :test
+
+
+###############################################################################
+# :install
+#   (inherited behavior)
+###############################################################################
 
 Cucumber::Rake::Task.new(:test, 'Features that must pass') do |task|
   task.cucumber_opts = '--require features --color --tags ~@wip --strict --format QuietFormatter'
