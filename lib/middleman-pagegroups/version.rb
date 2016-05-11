@@ -1,5 +1,5 @@
 module Middleman
     module MiddlemanPageGroups
-        VERSION = '1.0.3'
+        VERSION = '1.0.4.wip'
     end
 end

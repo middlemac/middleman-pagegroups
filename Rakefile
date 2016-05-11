@@ -197,8 +197,3 @@ def update_doc_file( version_new )
   File.write(file, content)
   puts "config.rb changed to #{version_new}."
 end
-
-
-def const_undef(const)
-  self.instance_eval { remove_const(const) }
-end
