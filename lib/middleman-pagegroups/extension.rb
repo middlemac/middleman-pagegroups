@@ -113,25 +113,45 @@ class MiddlemanPageGroups < ::Middleman::Extension
   ############################################################
 
   #--------------------------------------------------------
-  # We must ensure that for any directory the index_file
-  # is first. This is so that we can check it for a page
-  # order and rename the containing directory in output.
+  # We want to handle shallower paths first, and ensure
+  # that for any directory the index_file is first. This
+  # gives us the ability to rename our directories if the
+  # parent directory is to be renamed.
   # @!visibility private
   #--------------------------------------------------------
   def resource_sort_comparator( x, y )
-    if File.basename(x.path) == app.config[:index_file]
-      -1
+    x_length = Pathname(x.path).each_filename.to_a.count
+    x_basename = File.basename(x.path)
+    x_dirname = File.dirname(x.path)
+    y_length = Pathname(y.path).each_filename.to_a.count
+    y_basename = File.basename(y.path)
+    y_dirname = File.dirname(y.path)
+
+    if x_length != y_length
+      return x_length <=> y_length
     else
-      if File.dirname(x.path) == File.dirname(y.path)
-        return File.basename(x.path) <=> File.basename(y.path)
+      if [x_basename, y_basename].include?(app.config[:index_file])
+        # If either is an index file, favor the index file.
+        # If both are index files, favor the path.
+        if x_basename == y_basename
+          return x_basename <=> y_basename
+        else
+          return x_basename == app.config[:index_file] ? -1 : 1
+        end
       else
-        return File.dirname(x.path) <=> File.dirname(y.path)
+        # If the dir names are the same, favor the basename,
+        # otherwise favor the entire path name.
+        if x_dirname == y_dirname
+          return x_basename <=> y_basename
+        else
+          return x_dirname <=> y_dirname
+        end
       end
     end
   end
 
 
-  #--------------------------------------------------------
+    #--------------------------------------------------------
   # Add our own resource methods to each resource in the
   # site map.
   # @!visibility private
@@ -241,7 +261,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
           return nil
         else
           self.siblings
-            .find_all { |p| p.sort_order != 0 && !p.ignored }
+            .find_all { |p| p.sort_order && p.sort_order != 0 && !p.ignored }
             .push(self)
             .sort_by { |p| p.sort_order }
             .find_index(self) + 1
@@ -369,10 +389,10 @@ class MiddlemanPageGroups < ::Middleman::Extension
       strip = @app.extensions[:MiddlemanPageGroups].options[:strip_file_prefixes]
       page_name = File.basename(resource.path, '.*')
       path_part = File.dirname(resource.destination_path)
+      file_renamed = false
 
       if resource.content_type && resource.content_type.start_with?('text/html', 'application/xhtml')
 
-        file_renamed = false
         # Set the resource's sort order if provided via various means.
         if resource.data.key?('order')
           # Priority for ordering goes to the :order front matter key.
@@ -391,11 +411,24 @@ class MiddlemanPageGroups < ::Middleman::Extension
 
         # Remove the sort order indicator from the file or directory name.
         # This will only change the output path for files that have a sort
-        # order. Other files in a renamed directory that needs to have their
+        # order. Other files in a renamed directory that need to have their
         # paths changed will be changed below.
         if strip && sort_order
+
           path_parts = path_part.split('/')
+
+          # Handle preceding path parts, first, if there's a grandparent (all
+          # top level items have a parent and aren't part of this case). These
+          # will have already been set because we've done shallower paths first.
+          if resource.parent.parent
+            parent_path_parts = File.dirname(resource.parent.destination_path).split('/')
+            path_parts = parent_path_parts + path_parts[parent_path_parts.count..-1]
+          end
+
+          # Handle our immediate directory.
           path_parts.last.sub!(/^(\d*?)_/, '')
+
+          # Join up everything and write the correct path.
           path_part = path_parts.join('/')
           name_part = page_name.sub( "#{sort_order}_", '') + File.extname( resource.path )
           if path_part == '.'
