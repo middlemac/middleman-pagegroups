@@ -1,6 +1,25 @@
 middleman-pagegroups change log
 ===============================
 
+- Version 1.0.6 changes:
+
+  - Fixed bad documentation project. No idea how this was missed.
+  - Updated Cucumber test for version 1.0.5 fixture changes.
+  - Added API documentation to project root, and link to it from readme.
+
+
+- Version 1.0.5 changes:
+
+  - Fix using page order prefixes for nested folders.
+  - Updated fixture application to use deeply nested folders.
+
+- Version 1.0.4 Changes:
+
+  - Better Rakefile for version management.
+  - Added capybara development dependency to fix broken testing.
+  - Sample project now refers to non-local file.
+
+
 - Version 1.0.3 / 2016-May-11
 
   - Support ordering on directories; documentation

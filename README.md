@@ -12,6 +12,12 @@ middleman-pagegroups readme
    It is standalone and can be used in any **Middleman** project.
 
 
+Documentation One-Pager:
+------------------------
+
+[Have a sneak peak at the API without installing anything.](README_doc.html)
+
+
 Install the Gem
 ---------------
 
