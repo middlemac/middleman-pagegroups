@@ -15,7 +15,10 @@ middleman-pagegroups readme
 Documentation One-Pager:
 ------------------------
 
-[Have a sneak peak at the API without installing anything.](README_doc.html)
+Have a sneak peak at the API without installing anything.
+
+- [On Github](http://htmlpreview.github.io/?https://github.com/middlemac/middleman-pagegroups/blob/master/README_doc.html)
+- [Locally](README_doc.html)
 
 
 Install the Gem
