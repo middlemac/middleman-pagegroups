@@ -72,7 +72,7 @@ Feature: Provide helpers and resource items to make multiple targets easy to man
     And the file "index.html" should contain 'current_resource.brethren_next:nil'
     And the file "index.html" should contain 'current_resource.brethren_previous:nil'
     And the file "index.html" should contain 'current_resource.group_count:1'
-    And the file "index.html" should contain 'current_resource.legitimate_children:[#&lt;Middleman::Sitemap::Resource path=sub_folder_01/index.html&gt;, #&lt;Middleman::Sitemap::Resource path=20_sub_folder_02/index.html&gt;]'
+    And the file "index.html" should contain 'current_resource.legitimate_children:[#&lt;Middleman::Sitemap::Resource path=sub_folder_01/index.html&gt;, #&lt;Middleman::Sitemap::Resource path=20_sub_folder_02/index.html&gt;, #&lt;Middleman::Sitemap::Resource path=30_nested_top/index.html&gt;]'
     And the file "index.html" should contain 'current_resource.navigator_eligible:nil'
     And the file "index.html" should contain 'current_resource.page_group:source'
     And the file "index.html" should contain 'current_resource.page_name:index'

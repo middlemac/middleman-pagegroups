@@ -88,6 +88,10 @@ helpers do
   def product_version
     '1.0.5'
   end
+  
+  def product_uri
+    'http://https://github.com/middlemac/middleman-pagegroups'
+  end
 
 end
 
