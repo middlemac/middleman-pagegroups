@@ -170,7 +170,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #   the resource’s parent.
       #--------------------------------------------------------
       def resource.parent
-        root = path.sub(/^#{::Regexp.escape(traversal_root)}/, '')
+        root = path
         parts = root.split('/')
 
         tail = parts.pop
