@@ -29,7 +29,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
   option :nav_toc_index_class,           nil,              'Default css class for the nav_toc_index helper/partial.'
 
   # @!group Extension Configuration
-
+  
   # @!attribute [rw] options[:strip_file_prefixes]=
   # If `true` leading numbers used for sorting files will be removed for
   # presentation purposes. This makes it possible to neatly organize your
@@ -151,7 +151,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
   end
 
 
-    #--------------------------------------------------------
+  #--------------------------------------------------------
   # Add our own resource methods to each resource in the
   # site map.
   # @!visibility private
@@ -261,7 +261,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
           return nil
         else
           self.siblings
-            .find_all { |p| p.sort_order && p.sort_order != 0 && !p.ignored }
+            .find_all { |p| p.legitimate? }
             .push(self)
             .sort_by { |p| p.sort_order }
             .find_index(self) + 1
@@ -284,7 +284,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #--------------------------------------------------------
       def resource.brethren
         self.siblings
-          .find_all { |p| p.sort_order && p.sort_order != 0 && !p.ignored && p != self }
+          .find_all { |p| p.legitimate? && p != self }
           .sort_by { |p| p.sort_order }
       end
 
@@ -329,7 +329,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #    use of `:navigator => false` in its front matter.
       #  * This page has a `sort_order`.
       #
-      # @return (Boolean) Returns `true` if this pages is
+      # @return (Boolean) Returns `true` if this page is
       #   eligible for a previous/next page control.
       #--------------------------------------------------------
       def resource.navigator_eligible?
@@ -339,6 +339,21 @@ class MiddlemanPageGroups < ::Middleman::Extension
         group_navigates && self_navigates && self.sort_order != 0
       end
 
+
+      #--------------------------------------------------------
+      # Indicates whether or not a page is "legitimate" in
+      # terms of automatic navigation, based in:
+      #
+      #  * The resource has a sort order and isn't zero.
+      #  * The resource isn't ignored.
+      #
+      # @return (Boolean) Returns `true` if this pages 
+      #   participates in automatic navigation features.
+      #--------------------------------------------------------
+      def resource.legitimate?
+        self.sort_order && self.sort_order != 0 && !self.ignored
+      end
+  
 
       #--------------------------------------------------------
       # Returns an array of all of the children of this
@@ -356,7 +371,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #--------------------------------------------------------
       def resource.legitimate_children
         self.children
-          .find_all { |p| p.sort_order && p.sort_order != 0 && !p.ignored }
+          .find_all { |p| p.legitimate? }
           .sort_by { |p| p.sort_order }
       end
 

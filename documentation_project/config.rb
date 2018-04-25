@@ -86,11 +86,11 @@ helpers do
   end
 
   def product_version
-    '1.0.6'
+    '1.0.7.wip'
   end
   
   def product_uri
-    'http://https://github.com/middlemac/middleman-pagegroups'
+    'http://github.com/middlemac/middleman-pagegroups'
   end
 
 end
