@@ -170,7 +170,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
       #   the resource’s parent.
       #--------------------------------------------------------
       def resource.parent
-        root = path.sub(/^#{::Regexp.escape(traversal_root)}/, '')
+        root = path
         parts = root.split('/')
 
         tail = parts.pop
@@ -435,7 +435,7 @@ class MiddlemanPageGroups < ::Middleman::Extension
           # Handle preceding path parts, first, if there's a grandparent (all
           # top level items have a parent and aren't part of this case). These
           # will have already been set because we've done shallower paths first.
-          if resource.parent.parent
+          if resource.parent && resource.parent.parent
             parent_path_parts = File.dirname(resource.parent.destination_path).split('/')
             path_parts = parent_path_parts + path_parts[parent_path_parts.count..-1]
           end
