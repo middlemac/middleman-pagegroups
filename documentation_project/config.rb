@@ -86,7 +86,7 @@ helpers do
   end
 
   def product_version
-    '1.0.8.wip'
+    '1.0.8'
   end
   
   def product_uri
