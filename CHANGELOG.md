@@ -1,6 +1,17 @@
 middleman-pagegroups change log
 ===============================
 
+- Version 1.0.9 / 2021-April-12
+
+  - Updated Ruby version requirements to make it clear that Ruby 3.0+ is not yet
+    supported.
+    Updated test task so that default task doesn't use the noisy version with deprecation
+    warnings, and to remove the advertisement at the end of output. Corrected use of
+    deprecated @wip tag.
+  - Added .gitattributes for proper language reporting in GitHub.
+    No version bump.
+    No new gem.
+
 - Version 1.0.8 / 2018-May-18
 
   - Finalize 1.0.8
@@ -30,7 +41,7 @@ middleman-pagegroups change log
       - Fix using page order prefixes for nested folders.
       - Updated fixture application to use deeply nested folders.
 
-- Version 1.0.4 / 2016-May-14
+- Version 1.0.4 / 2016-May-15
 
   - Version 1.0.4 Changes:
       - Better Rakefile for version management.
@@ -64,6 +75,6 @@ middleman-pagegroups change log
   - Bump to v1.0.1 to repair bad sample project
   - Added RubyGems badge to README
 
-- Version 1.0.0 / 2016-April-02
+- Version 1.0.0 / 2016-April-03
 
   - Version 1.0.0
