@@ -1,6 +1,10 @@
 middleman-pagegroups change log
 ===============================
 
+- Version 1.0.10 / 2021-April-12
+
+  - Enforce the Ruby version requirements. Minor omission from previous release.
+
 - Version 1.0.9 / 2021-April-12
 
   - Updated Ruby version requirements to make it clear that Ruby 3.0+ is not yet
